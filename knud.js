@@ -1,10 +1,10 @@
 const Discord = require("discord.js");
-const { Client, Intents } = require("discord.js");
+const { Client, GatewayIntentBits } = require("discord.js");
 const fs = require("fs");
-const { prefix, token } = require("./config.json");
+const { prefix, TOKEN } = require("./config.json");
 
-const client = new Client({
-  intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES],
+const client = new Discord.Client({
+  intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages],
 });
 
 client.commands = new Discord.Collection();
@@ -39,4 +39,4 @@ client.on("messageCreate", async (message) => {
   }
 });
 
-client.login(token);
+client.login(TOKEN);
