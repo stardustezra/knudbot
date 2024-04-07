@@ -1,5 +1,4 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
-const { ActionRowBuilder, ButtonBuilder } = require("discord.js");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -51,7 +50,7 @@ module.exports = {
       ephemeral: true,
     });
     setTimeout(async () => {
-      const reminderMessage = `Reminder: @everyone "${message}"`;
+      const reminderMessage = `Reminder: @everyone ${message}`;
 
       await interaction.channel
         .send({ content: reminderMessage })
