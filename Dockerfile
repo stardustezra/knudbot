@@ -22,5 +22,5 @@ COPY . .
 # Expose the port that your app runs on
 EXPOSE 3000
 
-# Command to run your application
+# Command to run your application.
 CMD ["node", "knud.js"]
