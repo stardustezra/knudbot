@@ -1,5 +1,5 @@
 /node_modules
-/src
 config.json
 dingdong_token.txt
 .env
+env.ts
