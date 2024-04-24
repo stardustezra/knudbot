@@ -3,9 +3,10 @@ import { Routes } from "discord-api-types/v9";
 import { BOTTOKEN, GUILDTOKEN, CLIENTTOKEN } from "./env";
 import fs from "fs";
 import path from "path";
+import { SlashCommand } from "./types";
 
 // Define an array to store commands data
-const commands: any[] = [];
+const commands: SlashCommand[] = [];
 
 // Grab all the command folders from the commands directory
 const foldersPath = path.join(__dirname, "commands");
@@ -17,7 +18,7 @@ for (const folder of commandFolders) {
   const commandsPath = path.join(foldersPath, folder);
   const commandFiles = fs
     .readdirSync(commandsPath)
-    .filter((file) => file.endsWith(".ts")); // Filter TS files
+    .filter((file) => file.endsWith(".js")); // Filter JS files
 
   // Iterate through each command file
   for (const file of commandFiles) {
@@ -46,10 +47,10 @@ const rest = new REST({ version: "9" }).setToken(BOTTOKEN);
     );
 
     // The put method is used to fully refresh all commands in the guild with the current set
-    const data = await rest.put(
+    const data = (await rest.put(
       Routes.applicationGuildCommands(CLIENTTOKEN, GUILDTOKEN),
       { body: commands }
-    ) as any[];
+    )) as any[];
 
     console.log(
       `Successfully reloaded ${data.length} application (/) commands.`
