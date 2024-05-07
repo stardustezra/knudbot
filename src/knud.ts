@@ -1,8 +1,9 @@
 import fs from "fs";
 import path from "path";
 import { Client, Collection, GatewayIntentBits } from "discord.js";
-import { BOTTOKEN } from "./env";
 import { SlashCommand } from "./types";
+
+require("dotenv").config({ path: path.join(__dirname, "..", ".env") });
 
 // Define a new interface that extends Client and adds the commands property
 interface CustomClient extends Client {
@@ -27,11 +28,11 @@ for (const folder of commandFolders) {
   // Loop through each command file
   for (const file of commandFiles) {
     const filePath = path.join(commandsPath, file);
-    const command = require(filePath); // No type annotation needed for require
+    const command = require(filePath).default; // No type annotation needed for require
 
     // Check for required properties and add command to collection
-    if ("data" in command && "execute" in command) {
-      client.commands.set(command.data.name, command);
+    if ("command" in command && "execute" in command) {
+      client.commands.set(command.command.name, command);
     } else {
       console.log(
         `[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`
@@ -48,7 +49,7 @@ const eventFiles = fs
 // Loop through each event file
 for (const file of eventFiles) {
   const filePath = path.join(eventsPath, file);
-  const event = require(filePath) as {
+  const event = require(filePath).default as {
     name: string;
     once?: boolean;
     execute: Function;
@@ -62,4 +63,4 @@ for (const file of eventFiles) {
   }
 }
 
-client.login(BOTTOKEN);
+client.login(process.env.DISCORD_BOT_TOKEN);

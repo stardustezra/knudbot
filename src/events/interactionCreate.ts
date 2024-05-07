@@ -9,8 +9,9 @@ const event: BotEvent = {
 
     // Retrieve the command associated with the interaction
     const commandName = interaction.commandName;
+
     const command: SlashCommand | undefined =
-      interaction.client.slashCommands.get(commandName);
+      interaction.client.commands.get(commandName);
 
     if (!command) {
       console.error(`No command matching ${commandName} was found.`);

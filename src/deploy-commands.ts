@@ -1,9 +1,10 @@
 import { REST } from "discord.js";
 import { Routes } from "discord-api-types/v9";
-import { BOTTOKEN, GUILDTOKEN, CLIENTTOKEN } from "./env";
 import fs from "fs";
 import path from "path";
 import { SlashCommand } from "./types";
+
+require("dotenv").config({ path: path.join(__dirname, "..", ".env") });
 
 // Define an array to store commands data
 const commands: SlashCommand[] = [];
@@ -23,11 +24,11 @@ for (const folder of commandFolders) {
   // Iterate through each command file
   for (const file of commandFiles) {
     const filePath = path.join(commandsPath, file);
-    const command = require(filePath);
+    const command = require(filePath).default;
 
     // Check for required properties and push command data to the commands array
-    if ("data" in command && "execute" in command) {
-      commands.push(command.data.toJSON());
+    if ("command" in command && "execute" in command) {
+      commands.push(command.command.toJSON());
     } else {
       console.log(
         `[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`
@@ -37,7 +38,9 @@ for (const folder of commandFolders) {
 }
 
 // Construct and prepare an instance of the REST module
-const rest = new REST({ version: "9" }).setToken(BOTTOKEN);
+const rest = new REST({ version: "9" }).setToken(
+  process.env.DISCORD_BOT_TOKEN || ""
+);
 
 // Deploy commands
 (async () => {
@@ -48,7 +51,10 @@ const rest = new REST({ version: "9" }).setToken(BOTTOKEN);
 
     // The put method is used to fully refresh all commands in the guild with the current set
     const data = (await rest.put(
-      Routes.applicationGuildCommands(CLIENTTOKEN, GUILDTOKEN),
+      Routes.applicationGuildCommands(
+        process.env.DISCORD_CLIENT_ID || "",
+        process.env.DISCORD_GUILD_ID || ""
+      ),
       { body: commands }
     )) as any[];
 

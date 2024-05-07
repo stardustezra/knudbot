@@ -1,10 +1,8 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { SlashCommand } from "../types";
+import { SlashCommand } from "../../types";
 
 const command: SlashCommand = {
   command: new SlashCommandBuilder()
-    .setName("remindme")
-    .setDescription("Set a reminder.")
     .addStringOption((option) =>
       option
         .setName("message")
@@ -22,16 +20,17 @@ const command: SlashCommand = {
         .setName("time")
         .setDescription("When do you want to be reminded? (hh:mm)")
         .setRequired(true)
-    ),
+    )
+    .setName("remindme")
+    .setDescription("Set a reminder."),
   async execute(interaction) {
-    const dateArg = interaction.options.getString("date");
+    const dateArg = interaction.options.getString("date") || ""; // this is a hack, error handling should be added in case of null
     const timeArg = interaction.options.getString("time");
     const message = interaction.options.getString("message");
 
     // Formatting date to YYYY-MM-DD format
-    let formattedDate = dateArg.split("-");
-    formattedDate =
-      formattedDate[2] + "-" + formattedDate[1] + "-" + formattedDate[0];
+    const splitDate = dateArg.split("-");
+    let formattedDate = splitDate[2] + "-" + splitDate[1] + "-" + splitDate[0];
     const dateTime = `${formattedDate}T${timeArg}`;
 
     const date = new Date(dateTime); // Creating a Date object
@@ -62,9 +61,10 @@ const command: SlashCommand = {
       const reminderMessage = `Reminder: @everyone ${message}`; // Constructing reminder message
 
       // Sending reminder message to the channel
-      await interaction.channel
-        .send({ content: reminderMessage })
-        .catch(console.error);
+      interaction.channel &&
+        (await interaction.channel
+          .send({ content: reminderMessage })
+          .catch(console.error));
     }, reminderTime); // Timeout duration
   },
 };
